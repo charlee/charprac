@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script src="jquery-1.9.1.min.js"></script>
+  <script src="strokes.js"></script>
+  <title>笔顺字帖生成</title>
+
+  <script>
+  $(document).ready(function() {
+
+    var charTmpl = $("#char-tmpl").html();
+    
+    // generate onclick
+    $("#generate").click(function() {
+
+      var chars = $("#chars").val();
+
+      // set the anchor
+      var loc = location.href;
+      location.href = loc.replace(/#.*$/, "") + "#" + chars;
+
+      // clear old contents
+      var count = 0;
+      $("#practice-sheet").empty();
+
+      // add practice sheet
+      for (var i = 0; i < chars.length; i++) {
+        var ch = chars.charAt(i);
+        if (strokesLib.indexOf(ch) >= 0) {
+
+          if (count % 5 == 0) {
+            // page break
+            if (count > 0) {
+              $("<div>").addClass("newpage").html("第 " + (count/5+1) + " 页").appendTo("#practice-sheet");
+            }
+
+            // header
+            var now = new Date();
+            $("<div>").addClass("date").html(now.getFullYear() + "/" + now.getMonth() + "/" + now.getDate()).appendTo("#practice-sheet");
+          }
+
+          // generate a char sheet
+          var cp = $("<div>").addClass("char-practice"),
+          hl = $("<div>").addClass("headline").appendTo(cp),
+          pr = $("<div>").addClass("practice").appendTo(cp);
+
+          $("<div>").addClass("sample").html(ch).appendTo(hl);
+          $("<div>").addClass("stroke").css({
+            "background-image": "url(strokes/" + ch + ".png?v=1)"
+          }).appendTo(hl);
+
+          // make the cells for practicing
+          for (var j = 0; j < 15; j++) {
+            var cell = $("<div>").addClass("cell").html(ch).appendTo(pr);
+          }
+
+          pr.clone().appendTo(cp);
+
+          $("#practice-sheet").append(cp);
+
+          count++;
+        }
+      }
+
+    });
+    
+
+    // pre-load chars
+    var loc = location.href;
+    if (loc.indexOf("#") >= 0) {
+      var chars = loc.substring(loc.indexOf("#") + 1, loc.length);
+      $("#chars").val(chars);
+      $("#generate").click();
+    }
+
+
+  });
+  </script>
+
+  <style>
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #practice-sheet {
+    width: 700px;
+  }
+
+  .date {
+    width: 100%;
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .char-practice {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  .sample {
+    display: inline-block;
+    font-family: "Kaiti";
+    font-size: 64px;
+  }
+  .stroke {
+    display: inline-block;
+    width: 560px;
+    height: 40px;
+    overflow: hidden;
+    margin-left: 20px;
+    background-repeat: no-repeat;
+  }
+
+
+  .clear {
+    clear: both;
+  }
+
+  .newpage {
+    page-break-before: always;
+  }
+
+
+  /* cells for practicing */
+  .cell {
+    position: relative;
+    display: inline-block;
+    height: 45px;
+    width: 45px;
+    font-family: "Kaiti";
+    font-size: 42px;
+    border: solid 1px #888;
+    margin: 0;
+    border-left-width: 0;
+    color: transparent;
+    background: #fff url(cell-line.png) no-repeat;
+  }
+
+  .cell:first-child {
+    color: #000;
+    border-left-width: 1px;
+  }
+
+  .cell:nth-child(2), .cell:nth-child(3), .cell:nth-child(4), .cell:nth-child(5) {
+    color: #eee;
+  }
+
+
+  #chars-input {
+    background: #ddd;
+    border-bottom: solid 1px #888;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+
+  @media print {
+    #chars-input {
+      display: none;
+    }
+
+    .newpage {
+      height: 0;
+      overflow: hidden;
+    }
+  }
+
+  @media screen {
+    .newpage {
+      margin: 40px 0 20px;
+      border-bottom: dotted 1px #888;
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  </style>
+
+</head>
+<body>
+
+<div id="chars-input">
+<p>请输入汉字 <input type="text" id="chars" class="text" value="" name="chars" />
+<input type="submit" class="submit" value="生成" name="" id="generate" /></p>
+<p>每5个汉字一页。</p>
+<p>生成之后按Ctrl-P打印，打印时请选中"背景颜色和图片"，并取消"页眉和页脚"。不要"使用系统对话框进行打印..."。</p>
+</div>
+
+<div id="practice-sheet">
+
+</div>
+
+  
+</body>
+</html>
