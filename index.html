@@ -11,6 +11,8 @@
   $(document).ready(function() {
 
     var charTmpl = $("#char-tmpl").html();
+
+    $("#pagesize").html(CHAR_PER_PAGE);
     
     // generate onclick
     $("#generate").click(function() {
@@ -33,7 +35,7 @@
           if (count % CHAR_PER_PAGE == 0) {
             // page break
             if (count > 0) {
-              $("<div>").addClass("newpage").html("第 " + (count/5+1) + " 页").appendTo("#practice-sheet");
+              $("<div>").addClass("newpage").html("第 " + (count/CHAR_PER_PAGE+1) + " 页").appendTo("#practice-sheet");
             }
 
             // header
@@ -184,7 +186,7 @@
 <div id="chars-input">
 <p>请输入汉字 <input type="text" id="chars" class="text" value="" name="chars" />
 <input type="submit" class="submit" value="生成" name="" id="generate" /></p>
-<p>每7个汉字一页。</p>
+<p>每<span id="pagesize"></span>个汉字一页。</p>
 <p>生成之后按Ctrl-P打印，打印时请选中"背景颜色和图片"，并取消"页眉和页脚"。不要"使用系统对话框进行打印..."。</p>
 </div>
 
